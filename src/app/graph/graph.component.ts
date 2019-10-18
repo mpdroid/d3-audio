@@ -1,0 +1,120 @@
+import { Component, OnInit, ElementRef, ViewEncapsulation, Input, SimpleChanges, OnChanges } from '@angular/core';
+
+import { GraphType, createGraph, Graph } from './graph-type.enum'
+import * as d3 from 'd3';
+import { svg } from 'd3';
+import { ChangeDetectionStrategy } from '@angular/compiler/src/core';
+
+@Component({
+  selector: 'app-graph',
+  encapsulation: ViewEncapsulation.None,
+  templateUrl: './graph.component.html',
+  styleUrls: ['./graph.component.scss']
+})
+export class GraphComponent implements OnInit, OnChanges {
+
+  @Input() transitionTime = 17;
+
+  @Input() xRangeMax = 128; 
+
+  @Input() yRangeMax = 255;
+
+  @Input() graphType = GraphType.PIE;
+
+  hostElement;
+  svgElement;
+  groupElement;
+  d3ColorScale;
+  xConverter;
+  yConverter;
+  zConverter; 
+  radiusConverter;
+  opacityConverter;
+  graphs: Graph[];
+  currentGraph: Graph;
+
+  constructor(private elRef: ElementRef) {
+    this.hostElement = this.elRef.nativeElement;
+  }
+
+  ngOnInit() {
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes.graphType && !changes.graphType.firstChange) {
+        const oldType = changes.graphType.previousValue;
+        const oldGraph = this.currentGraph;
+        oldGraph.fade();
+        this.currentGraph = null;
+    }
+  }
+
+  updateData(newData: Uint8Array) {
+    this.updateAudioGraph(newData);
+  }
+
+  private createAudioGraph(data: Uint8Array) {
+    this.removeSVGElementFromParent();
+    this.setChartDimensions();
+    this.setColorScale();
+    this.addGroupElement();
+    this.createXAxis();
+    this.createYAxis();
+    this.currentGraph = createGraph(
+      this.graphType,
+      this.svgElement,
+      this.d3ColorScale,
+      this.xConverter,
+      this.yConverter,
+      this.transitionTime,
+      data);
+  }
+
+  private updateAudioGraph(data: Uint8Array) {
+    if (!this.svgElement || !this.currentGraph) {
+      this.createAudioGraph(data);
+      return;
+    }
+    this.currentGraph.update(data);
+  }
+
+  private setChartDimensions() {
+    let viewBoxHeight = 100;
+    let viewBoxWidth = 200;
+    this.svgElement = d3.select(this.hostElement).append('svg')
+      .attr('width', '100%')
+      .attr('height', '100%')
+      .attr('viewBox', '0 0 ' + viewBoxWidth + ' ' + viewBoxHeight);
+  }
+
+  private addGroupElement() {
+    this.groupElement = this.svgElement.append('g')
+      .attr('transform', 'translate(0,0)');
+  }
+
+  private setColorScale() {
+    this.d3ColorScale = d3.scaleSequential(d3.interpolateSpectral)
+      .domain([0, this.xRangeMax]);
+  }
+
+  private createXAxis() {
+    this.xConverter = d3.scaleLinear()
+      .domain([0, this.xRangeMax])
+      .range([0, 200]);
+  }
+
+  private createYAxis() {
+    this.yConverter = d3.scaleLinear()
+      .domain([0, this.yRangeMax])
+      .range([100, 0]);    
+  }
+
+  private removeSVGElementFromParent() {
+    // !!!!Caution!!!
+    // Make sure not to do;
+    //     d3.select('svg').remove();
+    // That will clear all other SVG elements in the DOM
+    d3.select(this.hostElement).select('svg').remove();
+  }
+
+}

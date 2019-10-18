@@ -1,34 +1,34 @@
+<div class="carousel" >
+    <app-graph  #miniLed
+    [transitionTime]="transitionTime"
+    [xRangeMax]="bufferLength"
+    yRangeMax="255"
+    [graphType]="ledGraphType">
+    </app-graph>
+    <app-graph  #miniBubble
+    [transitionTime]="transitionTime"
+    [xRangeMax]="bufferLength"
+    yRangeMax="255"
+    [graphType]="bubbleGraphType">
+    </app-graph>
+    <app-graph  #miniPie
+    [transitionTime]="transitionTime"
+    [xRangeMax]="bufferLength"
+    yRangeMax="255"
+    [graphType]="pieGraphType">
+    </app-graph>
+    <app-graph #miniSpiro
+    [transitionTime]="transitionTime"
+    [xRangeMax]="bufferLength"
+    yRangeMax="255"
+    [graphType]="spiroGraphType">
+    </app-graph>
+</div>
 <div class="container" >
-    <div id="audio-container" >
-            <!-- <iframe id="utube" width="300" height="80" src="https://www.youtube.com/embed/c40SjIZEfcg?controls=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"></iframe> -->
-
-        <audio id="audio" #audio crossorigin="anonymous" preload=auto controls (play)="processAudio($event)" controlsList="nodownload">
-            <source src="assets/bach.ogg" type="audio/ogg" >
-            <!-- <source src="assets/xlf.m4a" > -->
-            <!-- <source src="assets/pir.m4a" > -->
-            Your browser does not support the audio element.
-        </audio>
-        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Select music">
-            <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="select($event, 'bach.ogg')">
-                <span>Bach</span>
-            </button>
-            <button mat-menu-item (click)="select($event, 'btvn.ogg')">
-                <span>Beethoven</span>
-            </button>
-            <button mat-menu-item (click)="select($event, 'xlf.m4a')">
-                <span>Axel F</span>
-            </button>
-            <button mat-menu-item (click)="select($event, 'pir.m4a')">
-                <span>Paint it Red</span>
-            </button>
-            <button mat-menu-item (click)="select($event, 'snr.m4a')">
-                    <span>Senorita</span>
-                </button>
-            </mat-menu>
-    </div>
-    <app-bubble-chart (click)="processMic()" #bubbleChart [data]="dataArray" [transitionTime]="transitionTime" [xmax]="bufferLength" ymax="255"
-        grid="false" hticks="bufferLength" showLabel="0" ></app-bubble-chart>
+    <app-graph (click)="processMic()" #graph
+    [transitionTime]="transitionTime"
+    [xRangeMax]="bufferLength"
+    yRangeMax="255"
+    [graphType]="graphType">
+    </app-graph>
 </div>

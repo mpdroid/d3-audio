@@ -2,11 +2,33 @@
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+  height: 100vh;
 }
-
+.carousel {
+  z-index: 10;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 10vh;
+  width: 100%;
+  app-graph {
+    height: 6vh;
+    width: 12vh;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    padding: 5px;
+    border: 0.05rem solid grayscale($color: #0000ff);
+  }
+}
 .container {
   display: flex;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   // background-color: #EAFAF1;
   background-color: black;
   justify-content: center;
@@ -17,32 +39,11 @@
   padding: 0;
   margin: 0;
 
-  app-area-chart,
-  app-bubble-chart {
+  app-graph {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100%;
     width: 100%;
-  }
-
-  #audio-container {
-    position: absolute;
-    top: 2rem;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    opacity: 0.5;
-
-
-    audio {
-      display: none;
-    }
-
-    ::ng-deep span {
-      color: white;
-      display: none;
-    }
   }
 }

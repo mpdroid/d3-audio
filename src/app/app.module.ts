@@ -12,13 +12,13 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatTableModule} from '@angular/material/table';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { HomeComponent } from './home/home.component';
-import { BubbleChartComponent } from './bubble-chart/bubble-chart.component';
+import { GraphComponent } from './graph/graph.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    BubbleChartComponent
+    GraphComponent
   ],
   imports: [
     BrowserModule,
