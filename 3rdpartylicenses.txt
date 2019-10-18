@@ -85,12 +85,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 
-@angular/material/button
-
-@angular/material/icon
-
-@angular/material/menu
-
 @angular/platform-browser
 MIT
 
