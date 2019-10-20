@@ -2,8 +2,7 @@ import { Component, OnInit, ElementRef, ViewEncapsulation, Input, SimpleChanges,
 
 import { GraphType, createGraph, Graph } from './graph-type.enum'
 import * as d3 from 'd3';
-import { svg } from 'd3';
-import { ChangeDetectionStrategy } from '@angular/compiler/src/core';
+import { ColorService } from './color.service';
 
 @Component({
   selector: 'app-graph',
@@ -42,7 +41,6 @@ export class GraphComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if(changes.graphType && !changes.graphType.firstChange) {
-        const oldType = changes.graphType.previousValue;
         const oldGraph = this.currentGraph;
         oldGraph.fade();
         this.currentGraph = null;
@@ -60,6 +58,7 @@ export class GraphComponent implements OnInit, OnChanges {
     this.addGroupElement();
     this.createXAxis();
     this.createYAxis();
+    const colorService = new ColorService(this.xConverter.domain(), 0);
     this.currentGraph = createGraph(
       this.graphType,
       this.svgElement,
@@ -67,7 +66,8 @@ export class GraphComponent implements OnInit, OnChanges {
       this.xConverter,
       this.yConverter,
       this.transitionTime,
-      data);
+      data,
+      colorService);
   }
 
   private updateAudioGraph(data: Uint8Array) {
@@ -84,6 +84,7 @@ export class GraphComponent implements OnInit, OnChanges {
     this.svgElement = d3.select(this.hostElement).append('svg')
       .attr('width', '100%')
       .attr('height', '100%')
+      .attr('preserveAspectRatio', 'xMaxYMax meet')
       .attr('viewBox', '0 0 ' + viewBoxWidth + ' ' + viewBoxHeight);
   }
 

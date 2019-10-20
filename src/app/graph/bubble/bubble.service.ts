@@ -1,30 +1,37 @@
 import { Graph } from '../graph-type.enum';
 import * as d3 from 'd3';
+import { ColorService } from '../color.service';
 
 export class BubbleService implements Graph {
   graphElement;
   previousData: number[];
+  myXConvertor;
   zConvertor;
+  public static scaleIndex = 1;
+
   constructor(
     private hostSvgElement: any,
-    private colorScale: any,
     private xConvertor: any,
     private yConvertor: any,
-    private transitionTime: number
+    private transitionTime: number,
+    private colorService: ColorService
   ) {
     this.zConvertor = d3.scaleLinear()
       .domain(yConvertor.domain())
-      .range([0, 80]);
+      .range([0, 40]);
+    this.myXConvertor = d3.scaleLinear()
+      .domain(xConvertor.domain())
+      .range([10, 190]);
 
   }
 
   create(data: Uint8Array): void {
-    // this.graphElement = this.hostSvgElement.selectAll('bubbles').attr('id', 'bubbles');
-    this.previousData = [...data];
+    this.previousData = new Array(data.length).fill(0);
+    this.update(data);
   }
+
   update(data: Uint8Array): void {
-    console.log('received for update', data, this.previousData);
-    const t0 = d3.transition().duration(100).ease(d3.easeLinear);
+    const t0 = d3.transition().duration(this.transitionTime).ease(d3.easeLinear);
 
     // const hullData = [...data];
     // hullData.unshift(0);
@@ -33,6 +40,7 @@ export class BubbleService implements Graph {
 
     const peaks = [];
     data.forEach((datum, k) => {
+      if (k % 3 === 0) {
       if (this.previousData[k] > 0 && datum > this.previousData[k] * 1.5) {
         peaks.push({
           index: k,
@@ -40,6 +48,7 @@ export class BubbleService implements Graph {
           delta: datum - this.previousData[k]
         });
       }
+    }
     });
 
     const nw = Date.now();
@@ -48,11 +57,11 @@ export class BubbleService implements Graph {
       .data(peaks, (datum, index) => index)
       .enter()
       .append('circle')
+      .style('fill', (datum: any) => this.colorService.getColorInScale(datum.index, BubbleService.scaleIndex))
       .style('stroke', 'gold')
       .style('stroke-width', '0.2')
-      .style('fill', (datum: any) => this.colorScale('' + datum.index))
       .attr('r', (d: any) => this.zConvertor(0))
-      .attr('cx', (d: any) => this.xConvertor(d.index))
+      .attr('cx', (d: any) => this.myXConvertor(d.index))
       .attr('cy', (d: any) => this.yConvertor(d.value))
       .attr('opacity', 0.0)
       .transition(t0)
@@ -60,7 +69,8 @@ export class BubbleService implements Graph {
       .on('start', (d, i, n) => {
         d3.active(n[i])
           .transition()
-          .duration(5000).ease(d3.easeExpOut)
+          .duration(5000)
+          .ease(d3.easeExpOut)
           .attr('r', (d: any) => this.zConvertor(d.delta))
           .attr('opacity', 0)
           .remove();

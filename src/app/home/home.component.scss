@@ -4,24 +4,72 @@
   align-items: center;
   height: 100vh;
 }
+
 .carousel {
   z-index: 10;
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: space-evenly;
   align-items: center;
   position: absolute;
   top: 0;
   left: 0;
-  height: 10vh;
+  height: 14vh;
   width: 100%;
   app-graph {
+    cursor: pointer;
     height: 6vh;
     width: 12vh;
     margin-left: 0.5rem;
     margin-right: 0.5rem;
-    padding: 5px;
+    padding: 3px;
+    background-color: black;
     border: 0.05rem solid grayscale($color: #0000ff);
+    border-radius: 0.4rem;
+  }
+  app-graph.selected {
+    border: 0.1rem solid  #FF8500;
+  }
+}
+#logo {
+  position: absolute;
+  z-index: 100;
+  top: 90vh;
+  right: 5vh;
+  height: 7vh;
+  width: 7vh;
+  border-radius: 5vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // background-color: #007AFF;
+  // border: .1rem solid #007AFF;
+  cursor: pointer;
+  img {
+    height: 5vh;
+  }
+  #callout {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    top: -20vh;
+    right: 3vw;
+    height: 14vh;
+    width: 50vh;
+    padding: 1rem;
+    background-color: white;
+    font-size: 0.8rem;
+    border-radius: 0.2rem;
+    i {
+      font-size: 0.7rem;
+    }
+    svg {
+      position: absolute;
+      top: 18vh;
+      right: 1rem;
+    }
   }
 }
 .container {
@@ -31,9 +79,12 @@
   left: 0;
   // background-color: #EAFAF1;
   background-color: black;
+  // background-image: url("/assets/galaxy2.png");
+  // background-repeat: no-repeat;
+  // background-size: 100% 100%;
   justify-content: center;
   flex-direction: column;
-  align-items: center;
+  align-items: baseline;
   height: 100vh;
   width: 100vw;
   padding: 0;
@@ -46,4 +97,8 @@
     height: 100%;
     width: 100%;
   }
+}
+.error {
+  padding: .1rem;
+  font-size: 1rem;
 }

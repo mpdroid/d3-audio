@@ -1,17 +1,23 @@
 import { Graph } from '../graph-type.enum';
 import * as d3 from 'd3';
+import { ColorService } from '../color.service';
 
 export class LedService implements Graph{
   graphElement;
 
+  public static scaleIndex = 4;
+
   constructor(
     private hostSvgElement: any,
-    private colorScale: any,
     private xConvertor: any,
     private yConvertor: any,
-    private transitionTime: number
+    private transitionTime: number,
+    private colorService: ColorService
     ) { 
+
   }
+
+
 
   create(data: Uint8Array): void {
     const w = (this.xConvertor(1) - this.xConvertor(0));
@@ -22,7 +28,7 @@ export class LedService implements Graph{
       .enter()
       .append('rect')
       .style('fill', (datum: any, index) => {
-        return this.colorScale('' + index);
+        return this.colorService.getColorInScale(index, LedService.scaleIndex);
       })
       .attr('width', w)
       .attr('rx', rx)
@@ -39,7 +45,7 @@ export class LedService implements Graph{
       .transition()
       .duration(0)
       .ease(d3.easeLinear)
-      .attr('opacity', 1);
+      .attr('opacity', 0.6);
   }
 
   update(data: Uint8Array): void {
@@ -50,16 +56,20 @@ export class LedService implements Graph{
 
     const leds = this.hostSvgElement.selectAll('rect').data(data);
     leds
-      .transition()
+    .transition()
       .duration(this.transitionTime)
       .ease(d3.easeLinear)
-      .attr('y', (datum: any, index) => {
+      .style('fill', (datum: any, index) => {
+        return this.colorService.getColorInScale(index, LedService.scaleIndex);
+      })
+        .attr('y', (datum: any, index) => {
         return this.yConvertor(datum);
       })
       .attr('height', (datum: any, index) => {
         return this.yConvertor(0) - this.yConvertor(datum);
       });    
   }
+  
   fade(): void {
     if (!this.graphElement) {
       return;

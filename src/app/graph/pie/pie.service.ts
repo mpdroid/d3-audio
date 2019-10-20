@@ -2,32 +2,44 @@ import { Injectable } from '@angular/core';
 import { Graph } from './../graph-type.enum';
 
 import *  as d3 from 'd3';
+import { ColorService, COLOR_SCALE_ARRAY } from '../color.service';
+import { randomInt } from '../common-functions';
 
-export class PieService implements Graph{
+export class PieService implements Graph {
   pieElement;
   pieGenerator;
   pieDataConvertor;
+  pieColorScale;
+  weight;
   previousData: Uint8Array;
+  public static scaleIndex = 2;
 
   constructor(
-    private hostSvgElement: any,
-    private colorScale: any) { 
+    private hostSvgElement: any, private xConvertor: any, private colorService: ColorService) {
+
   }
 
   create(data: Uint8Array): void {
     this.pieElement = this.hostSvgElement
-        .append('g')
-        .attr('id', 'pie')
-        .attr('transform', 'translate(100,100)');
+      .append('g')
+      .attr('id', 'pie')
+      .attr('transform', 'translate(100,100)');
+    const l = data.length;
+    const mid = Math.floor(l/2);
+    this.weight = (index) => {
+        // multiply by (2 / (xrange/2) ) ^ (sign((index - xrange/2 )))
+        return Math.pow(2 * Math.abs(index-mid) / mid, Math.sign(index - mid)); 
+    }
     this.pieDataConvertor = d3.pie()
-        .startAngle(-Math.PI*.3)
-        .endAngle(Math.PI*.3)
-        .sort(null)
-        .value((d: number) => d);
+      .startAngle(-Math.PI * .3)
+      .endAngle(Math.PI * .3)
+      .sort(null)
+      .value((d: number, index) => d * this.weight(index)  );
 
+    
     this.pieGenerator = d3.arc()
-        .innerRadius(40)
-        .outerRadius(90);
+      .innerRadius(40)
+      .outerRadius(90);
 
     const pieData = this.pieDataConvertor(data);
 
@@ -35,13 +47,13 @@ export class PieService implements Graph{
       .enter()
       .append('path')
       .style('fill', (datum: any, index) => {
-        return this.colorScale('' + index);
+        return this.colorService.getColorInScale(index, PieService.scaleIndex);
       })
       .attr('stroke-width', 0)
       .attr('d', this.pieGenerator)
       .attr('opacity', 0.6);
 
-      this.previousData = data;
+    this.previousData = data;
   }
 
   update(data: Uint8Array): void {
@@ -52,7 +64,11 @@ export class PieService implements Graph{
     const pieData = this.pieDataConvertor(data);
 
     const slices = this.pieElement.selectAll('path').data(pieData);
-    slices.transition().duration(500).attrTween("d", this.pieTween);
+    slices.transition().duration(500)
+      .style('fill', (datum: any, index) => {
+        return this.colorService.getColorInScale(index, PieService.scaleIndex);
+      })
+      .attrTween("d", this.pieTween);
     this.previousData = data;
 
   }
@@ -76,7 +92,7 @@ export class PieService implements Graph{
     const interpolation = d3.interpolate(this.previousData[index], datum);
     this.previousData[index] = interpolation(0);
     return (t) => {
-        return this.pieGenerator(interpolation(t));
+      return this.pieGenerator(interpolation(t));
     }
   }
 }
