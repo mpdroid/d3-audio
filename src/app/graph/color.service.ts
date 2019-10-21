@@ -14,7 +14,6 @@ export class ColorService {
   scaleFunctionArray = [];
 
   constructor(private domain: any, private currentScaleIndex = 0) {
-    // this.setColorScale();
     COLOR_SCALE_ARRAY.forEach((fn) => {
       this.scaleFunctionArray.push(
         d3.scaleSequential(fn)

@@ -12,11 +12,11 @@ import { ColorService } from './color.service';
 })
 export class GraphComponent implements OnInit, OnChanges {
 
-  @Input() transitionTime = 17;
+  @Input() transitionTime = 5;
 
-  @Input() xRangeMax = 128; 
+  @Input() frequencyBinCount = 256; 
 
-  @Input() yRangeMax = 255;
+  @Input() maxStdAmplitude = 255;
 
   @Input() graphType = GraphType.PIE;
 
@@ -24,11 +24,8 @@ export class GraphComponent implements OnInit, OnChanges {
   svgElement;
   groupElement;
   d3ColorScale;
-  xConverter;
-  yConverter;
-  zConverter; 
-  radiusConverter;
-  opacityConverter;
+  xScaler;
+  yScaler;
   graphs: Graph[];
   currentGraph: Graph;
 
@@ -58,13 +55,13 @@ export class GraphComponent implements OnInit, OnChanges {
     this.addGroupElement();
     this.createXAxis();
     this.createYAxis();
-    const colorService = new ColorService(this.xConverter.domain(), 0);
+    const colorService = new ColorService(this.xScaler.domain(), 0);
     this.currentGraph = createGraph(
       this.graphType,
       this.svgElement,
       this.d3ColorScale,
-      this.xConverter,
-      this.yConverter,
+      this.xScaler,
+      this.yScaler,
       this.transitionTime,
       data,
       colorService);
@@ -95,18 +92,18 @@ export class GraphComponent implements OnInit, OnChanges {
 
   private setColorScale() {
     this.d3ColorScale = d3.scaleSequential(d3.interpolateSpectral)
-      .domain([0, this.xRangeMax]);
+      .domain([0, this.frequencyBinCount-1]);
   }
 
   private createXAxis() {
-    this.xConverter = d3.scaleLinear()
-      .domain([0, this.xRangeMax])
+    this.xScaler = d3.scaleLinear()
+      .domain([0, this.frequencyBinCount-1])
       .range([0, 200]);
   }
 
   private createYAxis() {
-    this.yConverter = d3.scaleLinear()
-      .domain([0, this.yRangeMax])
+    this.yScaler = d3.scaleLinear()
+      .domain([0, this.maxStdAmplitude])
       .range([100, 0]);    
   }
 

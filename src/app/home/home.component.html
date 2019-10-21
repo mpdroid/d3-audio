@@ -1,7 +1,7 @@
 <div id="logo" (click)="toggleCallout()"><img src="assets/siteicon.png">
     <div id="callout" *ngIf="showInfo">
         <div>
-        Visualizes sounds using <a
+        Visualizes sound using <a
             href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API">Web Audio API</a> and <a
             href="https://d3js.org/">D3</a>.
         <p>
@@ -16,31 +16,33 @@
         </svg>
     </div>
 </div>
-
 <div *ngIf="browserSupported && micAllowed" class="carousel">
-    <app-graph #miniLed [transitionTime]="transitionTime" [xRangeMax]="bufferLength" yRangeMax="255"
+    <app-graph #miniLed [transitionTime]="transitionTime" [frequencyBinCount]="bufferLength" maxStdAmplitude="255"
         [ngClass]="{'selected': graphType===ledGraphType}" [graphType]="ledGraphType" (click)="select(ledGraphType)">
     </app-graph>
-    <app-graph #miniBubble [transitionTime]="transitionTime" [xRangeMax]="bufferLength" yRangeMax="255"
+    <app-graph #miniBubble [transitionTime]="transitionTime" [frequencyBinCount]="bufferLength" maxStdAmplitude="255"
         [ngClass]="{'selected': graphType==bubbleGraphType}" [graphType]="bubbleGraphType"
         (click)="select(bubbleGraphType)">
     </app-graph>
-    <app-graph #miniPie [transitionTime]="transitionTime" [xRangeMax]="bufferLength" yRangeMax="255"
+    <app-graph #miniPie [transitionTime]="transitionTime" [frequencyBinCount]="bufferLength" maxStdAmplitude="255"
         [ngClass]="{'selected': graphType===pieGraphType}" [graphType]="pieGraphType" (click)="select(pieGraphType)">
     </app-graph>
-    <app-graph #miniSpiro [transitionTime]="transitionTime" [xRangeMax]="bufferLength" yRangeMax="255"
+    <app-graph #miniSpiro [transitionTime]="transitionTime" [frequencyBinCount]="bufferLength" maxStdAmplitude="255"
         [ngClass]="{'selected': graphType===spiroGraphType}" [graphType]="spiroGraphType"
         (click)="select(spiroGraphType)">
     </app-graph>
-    <app-graph #miniWave [transitionTime]="transitionTime" [xRangeMax]="bufferLength" yRangeMax="255"
+    <app-graph #miniWave [transitionTime]="transitionTime" [frequencyBinCount]="bufferLength" maxStdAmplitude="255"
         [ngClass]="{'selected': graphType===waveGraphType}" [graphType]="waveGraphType" (click)="select(waveGraphType)">
     </app-graph>
 </div>
 <div *ngIf="browserSupported && micAllowed" class="container">
-    <app-graph (click)="processMic()" #graph [transitionTime]="transitionTime" [xRangeMax]="bufferLength"
-        yRangeMax="255" [graphType]="graphType">
+    <app-graph (click)="processMic()" #graph [transitionTime]="transitionTime" [frequencyBinCount]="bufferLength"
+        maxStdAmplitude="255" [graphType]="graphType">
     </app-graph>
-</div>
+    <div id="hint" *ngIf="silent">
+        Go ahead, make some noise...
+    </div>
+    </div>
 <div *ngIf="!browserSupported" class="error">
     Sorry your browser does not support the audio features required by this web site. This site demonstrates the use of D3 to visualize sound.
     <p>
@@ -48,7 +50,7 @@
             repo</a> for more details.
 </div>
 <div *ngIf="browserSupported && !micAllowed" class="error">
-    Sorry this web site requires permission to capture sound from your microphone and visualize it using the d3
+    Sorry this web site requires your permission to capture sound from your microphone and visualize it using the d3
     JavaScript framework.
     <p>
         Please visit this <a href="https://github.com/mpdroid/d3-audio">github repo</a> for more details.

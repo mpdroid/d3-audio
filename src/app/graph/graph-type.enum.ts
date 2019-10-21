@@ -2,8 +2,6 @@ import { PieService } from './pie/pie.service';
 import { LedService } from './led/led.service';
 import { SpiroService } from './spiro/spiro.service';
 import { BubbleService } from './bubble/bubble.service';
-import * as d3 from 'd3';
-import { randomInt } from '../home/home.component';
 import { ColorService } from './color.service';
 import { WaveService } from './wave/wave.service';
 
@@ -24,8 +22,8 @@ export interface Graph {
 export function createGraph(type: GraphType,
     hostSvgElement: any,
     colorScale: any,
-    xConvertor: any,
-    yConvertor: any,
+    xScaler: any,
+    yScaler: any,
     transitionTime: number,
     data: Uint8Array,
     colorService: ColorService): Graph {
@@ -33,8 +31,8 @@ export function createGraph(type: GraphType,
         case GraphType.LED:
             const led: Graph = new LedService(
                 hostSvgElement,
-                xConvertor,
-                yConvertor,
+                xScaler,
+                yScaler,
                 transitionTime,
                 colorService);
             led.create(data);
@@ -43,8 +41,8 @@ export function createGraph(type: GraphType,
         case GraphType.BUBBLE:
             const bubble: Graph = new BubbleService(
                 hostSvgElement,
-                xConvertor,
-                yConvertor,
+                xScaler,
+                yScaler,
                 transitionTime,
                 colorService);
             bubble.create(data);
@@ -53,7 +51,7 @@ export function createGraph(type: GraphType,
         case GraphType.PIE:
             const pie: Graph = new PieService(
                 hostSvgElement,
-                xConvertor,
+                xScaler,
                 colorService);
             pie.create(data);
             return pie;
@@ -62,8 +60,8 @@ export function createGraph(type: GraphType,
             const spiro: Graph = new SpiroService(
                 hostSvgElement,
                 colorScale,
-                xConvertor,
-                yConvertor,
+                xScaler,
+                yScaler,
                 transitionTime,
                 colorService
             );
@@ -73,8 +71,8 @@ export function createGraph(type: GraphType,
         case GraphType.WAVE:
             const wave: Graph = new WaveService(
                 hostSvgElement,
-                xConvertor,
-                yConvertor,
+                xScaler,
+                yScaler,
                 transitionTime,
             );
             wave.create(data);

@@ -15,39 +15,38 @@ export class PieService implements Graph {
   public static scaleIndex = 2;
 
   constructor(
-    private hostSvgElement: any, private xConvertor: any, private colorService: ColorService) {
+    private hostSvgElement: any, private xScaler: any, private colorService: ColorService) {
 
   }
 
   create(data: Uint8Array): void {
+
+    const copy = [];
+    for(let k = 0; k < Math.floor(0.75*data.length) ; k++) {
+      copy.push(data[k]);
+    }
     this.pieElement = this.hostSvgElement
       .append('g')
       .attr('id', 'pie')
       .attr('transform', 'translate(100,100)');
-    const l = data.length;
-    const mid = Math.floor(l/2);
-    this.weight = (index) => {
-        // multiply by (2 / (xrange/2) ) ^ (sign((index - xrange/2 )))
-        return Math.pow(2 * Math.abs(index-mid) / mid, Math.sign(index - mid)); 
-    }
     this.pieDataConvertor = d3.pie()
       .startAngle(-Math.PI * .3)
       .endAngle(Math.PI * .3)
       .sort(null)
-      .value((d: number, index) => d * this.weight(index)  );
+      .value((d: number, index) => d  );
 
     
     this.pieGenerator = d3.arc()
       .innerRadius(40)
       .outerRadius(90);
 
-    const pieData = this.pieDataConvertor(data);
+    const pieData = this.pieDataConvertor(copy);
 
     this.pieElement.selectAll('slices').data(pieData)
       .enter()
       .append('path')
       .style('fill', (datum: any, index) => {
-        return this.colorService.getColorInScale(index, PieService.scaleIndex);
+        return this.colorService.getColorInScale(index, 2);
       })
       .attr('stroke-width', 0)
       .attr('d', this.pieGenerator)
@@ -61,12 +60,17 @@ export class PieService implements Graph {
       this.create(data);
       return;
     }
-    const pieData = this.pieDataConvertor(data);
+    const copy = [];
+    for(let k = 0; k < Math.floor(0.75*data.length) ; k++) {
+      copy.push(data[k]);
+    }
+
+    const pieData = this.pieDataConvertor(copy);
 
     const slices = this.pieElement.selectAll('path').data(pieData);
     slices.transition().duration(500)
       .style('fill', (datum: any, index) => {
-        return this.colorService.getColorInScale(index, PieService.scaleIndex);
+        return this.colorService.getColorInScale(index, 2);
       })
       .attrTween("d", this.pieTween);
     this.previousData = data;

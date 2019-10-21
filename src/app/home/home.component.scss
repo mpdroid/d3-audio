@@ -31,6 +31,8 @@
     border: 0.1rem solid  #FF8500;
   }
 }
+
+
 #logo {
   position: absolute;
   z-index: 100;
@@ -77,11 +79,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  // background-color: #EAFAF1;
   background-color: black;
-  // background-image: url("/assets/galaxy2.png");
-  // background-repeat: no-repeat;
-  // background-size: 100% 100%;
   justify-content: center;
   flex-direction: column;
   align-items: baseline;
@@ -96,6 +94,10 @@
     align-items: center;
     height: 100%;
     width: 100%;
+  }
+  #hint {
+    color: white;
+    font-size: 18px;
   }
 }
 .error {

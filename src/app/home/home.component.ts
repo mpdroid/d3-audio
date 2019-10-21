@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, AfterContentInit, ElementRef, isDevMode } from '@angular/core';
-import { Router } from '@angular/router';
 import { ViewChild } from '@angular/core';
 
 import { GraphComponent } from '../graph/graph.component';
@@ -9,8 +8,9 @@ import { LedService } from '../graph/led/led.service';
 import { BubbleService } from '../graph/bubble/bubble.service';
 import { PieService } from '../graph/pie/pie.service';
 import { SpiroService } from '../graph/spiro/spiro.service';
-import * as d3 from 'd3';
 import { WaveService } from '../graph/wave/wave.service';
+import { randomInt, range, shuffle } from '../graph/common-functions';
+import * as d3 from 'd3';
 
 //https://stackoverflow.com/questions/38087013/angular2-web-speech-api-voice-recognition
 export interface IWindow extends Window {
@@ -39,7 +39,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   graphTypes = Object.keys(GraphType).filter((key: any) => !isNaN(key));
   graphType = GraphType.LED;
-  transitionTime = 17;
+  transitionTime = 5;
   refreshInterval;
   analyzer;
   leftAnalyzer;
@@ -49,6 +49,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   micStream;
   micAudioContext;
   scriptProcessor;
+  silent = false;
+  silentCounter = 0;
 
 
   ledGraphType = GraphType.LED;
@@ -130,13 +132,26 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   }
 
+  logDataCount = 0;;
   processInput = (event) => {
 
     const dataArray = new Uint8Array(this.analyzer.frequencyBinCount);
-    const waveArray = new Uint8Array(this.analyzer.fftSize);
+    const waveArray = new Uint8Array(this.analyzer.frequencyBinCount);
     this.analyzer.fftSize = this.fftSize;
     this.analyzer.getByteFrequencyData(dataArray);
     this.analyzer.getByteTimeDomainData(waveArray);
+
+    const mean = Math.floor(d3.mean(dataArray));
+    if (mean === 0) {
+        this.silentCounter++;
+        if(this.silentCounter > 5) {
+          this.silent = true;
+        }
+    } else {
+      this.silentCounter = 0;
+      this.silent = false;
+    }
+
     if (this.graphType === this.waveGraphType) {
       this.graph.updateData(waveArray);
 
@@ -148,13 +163,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.miniPie.updateData(dataArray);
     this.miniSpiro.updateData(dataArray);
     this.miniWave.updateData(waveArray);
-
-
   }
 
   processMic() {
     if (!this.micStream) {
-
       navigator.mediaDevices.getUserMedia({ audio: true })
         .then((stream) => {
           this.micAllowed = true;
@@ -171,23 +183,4 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-}
-
-function shuffle(arr) {
-  let n = 0;
-  for (n = 0; n < arr.length - 1; n++) {
-    let k = randomInt(n + 1, arr.length - 1);
-    let t = arr[k];
-    arr[k] = arr[n];
-    arr[n] = t;
-  }
-}
-
-export function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-// https://stackoverflow.com/questions/8069315/create-array-of-all-integers-between-two-numbers-inclusive-in-javascript-jquer
-export function range(n) {
-  return Array.from({ length: n }, (v, k) => k + 1);
 }

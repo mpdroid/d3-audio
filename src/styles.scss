@@ -30,3 +30,14 @@ $d3-audio-theme: mat-light-theme($d3-audio-primary, $d3-audio-accent, $d3-audio-
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.led-border line{
+    stroke: black;
+    stroke-width: 0.2;
+  }
+  
+.led-border path{
+    stroke: black;
+    stroke-width: 0;
+  }
+  
